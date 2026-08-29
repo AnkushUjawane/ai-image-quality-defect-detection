@@ -50,7 +50,7 @@ aperture-image-quality-detector/
 │   ├── nginx.conf, Dockerfile             multi-stage: npm build → nginx serve
 │   └── .env.example                       VITE_API_BASE_URL
 ├── sample_images/             Example images spanning every quality condition
-├── docker-compose.yml
+├── docker-compose.yaml
 └── README.md
 ```
 
@@ -71,6 +71,8 @@ the issue's `confidence`, thresholded into `low` / `medium` / `high` `severity`.
 An overall `quality_score` (0–100) is derived by penalizing the base score of
 100 proportionally to each detected issue's severity × confidence; the
 `quality_label` (ACCEPTABLE / DEGRADED / DEFECTIVE) is derived from that score.
+In assessment terminology, the `corruption` class is the implementation of
+the required **"potential visual defect"** detection capability.
 
 Why RandomForest-on-engineered-features rather than an end-to-end CNN: it stays
 fully interpretable (see §2.4), trains in seconds without a GPU, and — per the
@@ -122,7 +124,7 @@ Headline test-set numbers (RandomForest, 1120 train / 280 test):
 
 ## 3. API reference
 
-Base URL: `http://localhost:8000` (see `docker-compose.yml` to change ports).
+Base URL: `http://localhost:8000` (see `docker-compose.yaml` to change ports).
 Interactive Swagger docs are auto-served at **`/docs`**.
 
 | Method | Path | Description |
@@ -211,7 +213,7 @@ Configurable environment variables:
 | `DATABASE_URL` | backend | `sqlite:////app/data/analyses.db` | swap in Postgres etc. by pointing to a different SQLAlchemy URL |
 | `DATA_DIR` | backend | `/app/data` | where the SQLite file + uploaded image copies live |
 | `CORS_ORIGINS` | backend | `*` | comma-separated allowed origins |
-| `VITE_API_BASE_URL` | frontend (build arg) | `http://localhost:8000` | the URL the **browser** uses to reach the backend; baked into the React bundle at build time — see `docker-compose.yml`'s `build.args` |
+| `VITE_API_BASE_URL` | frontend (build arg) | `http://localhost:8000` | the URL the **browser** uses to reach the backend; baked into the React bundle at build time — see `docker-compose.yaml`'s `build.args` |
 
 To point the backend at PostgreSQL instead of SQLite, set e.g.
 `DATABASE_URL=postgresql://user:pass@host:5432/dbname` and add a `psycopg2-binary`
@@ -249,15 +251,36 @@ for the full component/hook breakdown.
   probability) and the score-penalty weights are documented, fixed constants
   in `predict.py` — not hidden magic numbers — so they're easy to audit or
   retune.
-- **Corruption vs. hard invalid files**: a file that isn't decodable at all
+- **Corruption / "potential visual defect" vs. hard invalid files**: a file that isn't decodable at all
   (empty, truncated, wrong format) is rejected at the API layer with `422`
   before ever reaching the model; the `corruption` ML class instead targets
   images that decode fine but contain compression artifacts / corrupted
   *regions*.
 
-## 8. Bonus work implemented
+## 9. Sample images included
 
-- ✅ Automated backend tests (`backend/tests/test_api.py`, 8 tests, pytest)
+`/sample_images` contains representative examples for quick manual testing:
+
+- `01_clean.png` — clean / acceptable baseline
+- `02_blur.png` — blur / insufficient sharpness
+- `03_underexposed.png` — underexposure
+- `04_overexposed.png` — overexposure
+- `05_noisy.png` — visible noise
+- `06_corrupted_defect.png` — corruption / potential visual defect
+
+## 10. Final verification commands (2026-08-29)
+
+- Backend tests (pass, 9/9):
+  - `cd backend && DATA_DIR=/tmp/iq_ci_data pytest tests/ -v`
+- Frontend production build (pass):
+  - `cd frontend && npm ci && npm run build`
+- Docker Compose deployment check:
+  - `docker compose up --build -d`
+  - Result in this sandbox: backend image build failed due outbound SSL certificate validation while `pip install` runs inside Docker build (`CERTIFICATE_VERIFY_FAILED`), so full container bring-up could not be completed in this environment.
+
+## 11. Bonus work implemented
+
+- ✅ Automated backend tests (`backend/tests/test_api.py`, 9 tests, pytest)
 - ✅ Health/status endpoint (`/api/health`) with model-load check
 - ✅ Full explainability layer (plain-language, feature-grounded per-issue explanations)
 - ✅ Dockerized, reproducible deployment with a named persistent volume
