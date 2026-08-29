@@ -1,5 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class Issue(BaseModel):
@@ -10,6 +10,8 @@ class Issue(BaseModel):
 
 
 class AnalysisResult(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: int
     filename: str
     quality_score: int
@@ -18,9 +20,6 @@ class AnalysisResult(BaseModel):
     image_stats: dict
     image_url: Optional[str] = None
     created_at: str
-
-    class Config:
-        from_attributes = True
 
 
 class AnalysisListItem(BaseModel):
@@ -34,6 +33,8 @@ class AnalysisListItem(BaseModel):
 
 
 class HealthResponse(BaseModel):
+    model_config = ConfigDict(protected_namespaces=())
+
     status: str
     model_loaded: bool
     version: str

@@ -1,0 +1,201 @@
+{
+  "feature_names": [
+    "laplacian_var",
+    "tenengrad",
+    "mean_brightness",
+    "brightness_std",
+    "underexposed_frac",
+    "overexposed_frac",
+    "noise_estimate",
+    "high_freq_energy",
+    "edge_density",
+    "colorfulness",
+    "saturation_mean",
+    "block_artifact_score",
+    "entropy"
+  ],
+  "issues": {
+    "blur": {
+      "accuracy": 0.875,
+      "precision": 0.676923076923077,
+      "recall": 0.7586206896551724,
+      "f1": 0.7154471544715447,
+      "roc_auc": 0.9246660453557005,
+      "confusion_matrix": [
+        [
+          201,
+          21
+        ],
+        [
+          14,
+          44
+        ]
+      ],
+      "positive_rate_test": 0.20714285714285716,
+      "top_features": [
+        [
+          "laplacian_var",
+          0.1988384052470705
+        ],
+        [
+          "noise_estimate",
+          0.1495315541632381
+        ],
+        [
+          "edge_density",
+          0.11799606102319656
+        ],
+        [
+          "high_freq_energy",
+          0.09525873307065132
+        ]
+      ]
+    },
+    "underexposure": {
+      "accuracy": 0.8642857142857143,
+      "precision": 0.7551020408163265,
+      "recall": 0.5873015873015873,
+      "f1": 0.6607142857142857,
+      "roc_auc": 0.8397337429595494,
+      "confusion_matrix": [
+        [
+          205,
+          12
+        ],
+        [
+          26,
+          37
+        ]
+      ],
+      "positive_rate_test": 0.225,
+      "top_features": [
+        [
+          "mean_brightness",
+          0.31778309041469727
+        ],
+        [
+          "colorfulness",
+          0.11515454203782402
+        ],
+        [
+          "brightness_std",
+          0.09596987051230622
+        ],
+        [
+          "overexposed_frac",
+          0.09596830403280679
+        ]
+      ]
+    },
+    "overexposure": {
+      "accuracy": 0.9107142857142857,
+      "precision": 0.8490566037735849,
+      "recall": 0.7258064516129032,
+      "f1": 0.782608695652174,
+      "roc_auc": 0.9197247706422018,
+      "confusion_matrix": [
+        [
+          210,
+          8
+        ],
+        [
+          17,
+          45
+        ]
+      ],
+      "positive_rate_test": 0.22142857142857142,
+      "top_features": [
+        [
+          "overexposed_frac",
+          0.32823282117825925
+        ],
+        [
+          "mean_brightness",
+          0.25084472643642325
+        ],
+        [
+          "saturation_mean",
+          0.10170879352931558
+        ],
+        [
+          "entropy",
+          0.0423500586429066
+        ]
+      ]
+    },
+    "noise": {
+      "accuracy": 0.9607142857142857,
+      "precision": 0.9827586206896551,
+      "recall": 0.8507462686567164,
+      "f1": 0.912,
+      "roc_auc": 0.9824819564151075,
+      "confusion_matrix": [
+        [
+          212,
+          1
+        ],
+        [
+          10,
+          57
+        ]
+      ],
+      "positive_rate_test": 0.2392857142857143,
+      "top_features": [
+        [
+          "noise_estimate",
+          0.26946088209693364
+        ],
+        [
+          "high_freq_energy",
+          0.1952208895654585
+        ],
+        [
+          "laplacian_var",
+          0.19281270118988716
+        ],
+        [
+          "entropy",
+          0.08481765789115138
+        ]
+      ]
+    },
+    "corruption": {
+      "accuracy": 0.9642857142857143,
+      "precision": 0.9333333333333333,
+      "recall": 0.9032258064516129,
+      "f1": 0.9180327868852459,
+      "roc_auc": 0.9920094702574727,
+      "confusion_matrix": [
+        [
+          214,
+          4
+        ],
+        [
+          6,
+          56
+        ]
+      ],
+      "positive_rate_test": 0.22142857142857142,
+      "top_features": [
+        [
+          "underexposed_frac",
+          0.2426677542969108
+        ],
+        [
+          "noise_estimate",
+          0.17629581685239928
+        ],
+        [
+          "block_artifact_score",
+          0.1590905503949806
+        ],
+        [
+          "laplacian_var",
+          0.10218143425801703
+        ]
+      ]
+    }
+  },
+  "n_train": 1120,
+  "n_test": 280
+}
