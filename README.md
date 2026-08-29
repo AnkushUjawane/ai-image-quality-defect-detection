@@ -6,20 +6,9 @@ flagging an overall ACCEPTABLE / DEGRADED / DEFECTIVE verdict — using a
 **hybrid classical-CV + machine-learning** pipeline (no external AI/vision
 APIs, no API keys required).
 
-flowchart LR
-    A["🎨 Frontend<br/><b>React + Vite</b><br/>Image Upload & Results"]
-
-    B["⚡ FastAPI Backend<br/><b>REST API + SQLite</b><br/>Request Processing"]
-
-    C["🤖 ML Pipeline<br/><b>OpenCV + Random Forest</b><br/>Feature Extraction & Detection"]
-
-    D["📊 Quality Report<br/><b>JSON Response</b><br/>Score, Issues & Recommendations"]
-
-    A -->|"📦 multipart/form-data"| B
-    B -->|"🔢 Feature Vector"| C
-    C -->|"🔍 Predictions"| B
-    B -->|"📄 JSON Quality Report"| D
-    D -->|"📊 Display Results"| A
+<p align="center">
+  <img src="docs/architecture-flowchart.svg" alt="Aperture architecture diagram" width="800">
+</p>
 
 ## 1. Project layout
 
@@ -176,33 +165,8 @@ curl -F "file=@sample_images/03_underexposed.png;type=image/png" \
 - `404` — analysis id not found (history lookup)
 - `500` — unexpected internal error (caught and reported without crashing the request)
 
-## 4. Running locally (without Docker)
 
-Requires Python 3.11+ and Node 18+.
-
-```bash
-cd backend
-pip install -r requirements.txt
-DATA_DIR=./data uvicorn app.main:app --reload --port 8000
-```
-
-In a second terminal:
-```bash
-cd frontend
-npm install
-cp .env.example .env   # VITE_API_BASE_URL=http://localhost:8000
-npm run dev
-```
-Open `http://localhost:5173` (Vite's dev server). See `frontend/README.md`
-for the component breakdown.
-
-Run tests:
-```bash
-cd backend
-DATA_DIR=/tmp/iq_test_data pytest -v
-```
-
-## 5. Running with Docker (preferred)
+## 4. Running with Docker (preferred)
 
 ```bash
 docker compose up --build
@@ -234,6 +198,32 @@ training or network access happens at container startup. `app/ml/predict.py`
 lazy-loads it once per process (`joblib.load`, cached in a module-level
 global) and every `/api/analyze` request reuses the in-memory model for
 inference; there is no per-request model reload.
+
+## 5. Running locally (without Docker)
+
+Requires Python 3.11+ and Node 18+.
+
+```bash
+cd backend
+pip install -r requirements.txt
+DATA_DIR=./data uvicorn app.main:app --reload --port 8000
+```
+
+In a second terminal:
+```bash
+cd frontend
+npm install
+cp .env.example .env   
+npm run dev
+```
+Open `http://localhost:5173` (Vite's dev server). See `frontend/README.md`
+for the component breakdown.
+
+Run tests:
+```bash
+cd backend
+DATA_DIR=/tmp/iq_test_data pytest -v
+```
 
 ## 6. Frontend
 
@@ -292,5 +282,4 @@ for the full component/hook breakdown.
 - ✅ Full explainability layer (plain-language, feature-grounded per-issue explanations)
 - ✅ Dockerized, reproducible deployment with a named persistent volume
 
-Not implemented (documented as future work): quality heatmaps/localization,
-confidence calibration, model versioning, CI/CD, batch analysis endpoint.
+Future Work: quality heatmaps/localization, confidence calibration, model versioning, CI/CD, batch analysis endpoint.
