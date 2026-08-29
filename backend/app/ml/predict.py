@@ -49,7 +49,10 @@ SEVERITY_WEIGHT = {"low": 8, "medium": 18, "high": 32}
 def _load_bundle():
     global _BUNDLE
     if _BUNDLE is None:
-        _BUNDLE = joblib.load(MODEL_PATH)
+        try:
+            _BUNDLE = joblib.load(MODEL_PATH)
+        except Exception:
+            _BUNDLE = {"fallback": True}
     return _BUNDLE
 
 
@@ -59,6 +62,20 @@ def _severity_from_proba(p: float) -> str:
     if p < 0.7:
         return "medium"
     return "high"
+
+
+def _clamp01(value: float) -> float:
+    return float(max(0.0, min(1.0, value)))
+
+
+def _fallback_issue_probabilities(feats: dict) -> dict:
+    return {
+        "blur": _clamp01((120.0 - feats["laplacian_var"]) / 120.0),
+        "underexposure": _clamp01(max(feats["underexposed_frac"], (70.0 - feats["mean_brightness"]) / 70.0)),
+        "overexposure": _clamp01(max(feats["overexposed_frac"], (feats["mean_brightness"] - 185.0) / 70.0)),
+        "noise": _clamp01((feats["noise_estimate"] - 10.0) / 20.0),
+        "corruption": _clamp01(max((feats["block_artifact_score"] - 1.6) / 1.2, (feats["high_freq_energy"] - 0.9) / 0.1)),
+    }
 
 
 def analyze_image(image_bytes: bytes) -> dict:
@@ -71,17 +88,26 @@ def analyze_image(image_bytes: bytes) -> dict:
         raise ValueError("Empty or unreadably small file")
 
     feats = compute_features(image_bytes)  # raises ValueError if undecodable
-    vec = feature_vector(feats).reshape(1, -1)
-
     bundle = _load_bundle()
-    scaler = bundle["scaler"]
-    models = bundle["models"]
-    vec_s = scaler.transform(vec)
+    if bundle.get("fallback"):
+        issue_probabilities = _fallback_issue_probabilities(feats)
+    else:
+        vec = feature_vector(feats).reshape(1, -1)
+        scaler = bundle["scaler"]
+        models = bundle["models"]
+        vec_s = scaler.transform(vec)
+        issue_probabilities = {
+            issue: (
+                float(clf.predict_proba(vec_s)[0][1])
+                if len(clf.classes_) > 1
+                else float(clf.predict(vec_s)[0])
+            )
+            for issue, clf in models.items()
+        }
 
     issues = []
     penalty = 0.0
-    for issue, clf in models.items():
-        proba = float(clf.predict_proba(vec_s)[0][1]) if len(clf.classes_) > 1 else float(clf.predict(vec_s)[0])
+    for issue, proba in issue_probabilities.items():
         present = proba >= 0.5
         if present:
             severity = _severity_from_proba(proba)
