@@ -1,0 +1,72 @@
+.issue-card {
+  border: 1px solid var(--line);
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  background: var(--bg-raised);
+}
+
+.issue-card.low {
+  border-left-color: var(--blue);
+}
+
+.issue-card.medium {
+  border-left-color: var(--amber);
+}
+
+.issue-card.high {
+  border-left-color: var(--red);
+}
+
+.issue-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.issue-type {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.issue-tags {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.sev-badge {
+  padding: 2px 7px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.sev-badge.low {
+  background: rgba(110, 168, 240, 0.15);
+  color: var(--blue);
+}
+
+.sev-badge.medium {
+  background: rgba(240, 180, 92, 0.15);
+  color: var(--amber);
+}
+
+.sev-badge.high {
+  background: rgba(240, 100, 92, 0.15);
+  color: var(--red);
+}
+
+.issue-explanation {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}

@@ -1,0 +1,55 @@
+/* Design tokens + global resets shared by every component.
+   Imported once in main.jsx — component CSS files below reference these
+   custom properties via var(--name) without redeclaring them. */
+
+:root {
+  --bg: #0d0f12;
+  --bg-panel: #14171c;
+  --bg-raised: #191d23;
+  --line: #262b33;
+  --line-bright: #3a4250;
+  --text: #e8ebef;
+  --text-dim: #8b93a1;
+  --text-faint: #565e6b;
+  --phosphor: #6ee7a0;
+  --phosphor-dim: #2f5f45;
+  --amber: #f0b45c;
+  --red: #f0645c;
+  --blue: #6ea8f0;
+  --mono: 'JetBrains Mono', monospace;
+  --sans: 'Space Grotesk', sans-serif;
+  --radius: 3px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  min-height: 100vh;
+}
+
+body {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
