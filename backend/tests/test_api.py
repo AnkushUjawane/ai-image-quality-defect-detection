@@ -9,13 +9,13 @@ import sys
 
 import numpy as np
 from PIL import Image
-from app.ml import predict
 
 os.environ.setdefault("DATA_DIR", "/tmp/iq_test_data")
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi.testclient import TestClient
+from app.ml import predict
 from app.main import app
 
 client = TestClient(app)
