@@ -15,6 +15,7 @@ os.environ.setdefault("DATA_DIR", "/tmp/iq_test_data")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi.testclient import TestClient
+from app.ml import predict
 from app.main import app
 
 client = TestClient(app)
@@ -86,3 +87,21 @@ def test_history_and_detail_roundtrip():
 def test_get_nonexistent_analysis_returns_404():
     r = client.get("/api/analyses/999999")
     assert r.status_code == 404
+
+
+def test_fallback_model_is_used_when_bundle_load_fails(monkeypatch):
+    monkeypatch.setattr(predict, "_BUNDLE", None)
+
+    def _raise_load_error(_):
+        raise EOFError("corrupted model bundle")
+
+    monkeypatch.setattr(predict.joblib, "load", _raise_load_error)
+
+    health = client.get("/api/health")
+    assert health.status_code == 200
+    assert health.json()["model_loaded"] is True
+
+    arr = np.full((200, 200, 3), 250, dtype=np.uint8)
+    r = client.post("/api/analyze", files={"file": ("bright-fallback.png", _png_bytes(arr), "image/png")})
+    assert r.status_code == 200
+    assert "overexposure" in [i["type"] for i in r.json()["issues"]]
