@@ -42,6 +42,14 @@ export default function App() {
     setPreviewSrc(URL.createObjectURL(file));
   }
 
+  function handleClearFile() {
+    setSelectedFile(null);
+    setPreviewSrc(null);
+    setStatus("idle");
+    setResult(null);
+    setError("");
+  }
+
   async function handleAnalyze() {
     if (!selectedFile) return;
     setStatus("loading");
@@ -80,6 +88,7 @@ export default function App() {
           previewSrc={previewSrc}
           onFileSelected={handleFileSelected}
           onAnalyze={handleAnalyze}
+          onClear={handleClearFile}
           analyzing={status === "loading"}
           canAnalyze={!!selectedFile}
         />

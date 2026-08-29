@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { ALLOWED_MIME_TYPES, MAX_FILE_SIZE_BYTES } from "../../config";
 import "./Dropzone.css";
 
-export default function Dropzone({ previewSrc, onFileSelected, onAnalyze, analyzing, canAnalyze }) {
+export default function Dropzone({ previewSrc, onFileSelected, onAnalyze, onClear, analyzing, canAnalyze }) {
   const inputRef = useRef(null);
   const [dragOver, setDragOver] = useState(false);
   const [hint, setHint] = useState({ text: "", error: false });
@@ -25,6 +25,13 @@ export default function Dropzone({ previewSrc, onFileSelected, onAnalyze, analyz
     e.preventDefault();
     setDragOver(false);
     validateAndSelect(e.dataTransfer.files?.[0]);
+  }
+
+  function handleClear(e) {
+    e.stopPropagation(); // don't let the click bubble up and reopen the file picker
+    setHint({ text: "", error: false });
+    if (inputRef.current) inputRef.current.value = "";
+    onClear?.();
   }
 
   return (
@@ -64,6 +71,16 @@ export default function Dropzone({ previewSrc, onFileSelected, onAnalyze, analyz
                 <span className="corner bl" /><span className="corner br" />
               </div>
               <div className={`scanline${analyzing ? " active" : ""}`} />
+              <button
+                type="button"
+                className="clear-btn"
+                aria-label="Remove selected photo"
+                title="Remove photo"
+                onClick={handleClear}
+                disabled={analyzing}
+              >
+                ✕
+              </button>
             </div>
           </div>
         )}
