@@ -6,13 +6,20 @@ flagging an overall ACCEPTABLE / DEGRADED / DEFECTIVE verdict — using a
 **hybrid classical-CV + machine-learning** pipeline (no external AI/vision
 APIs, no API keys required).
 
-```
-┌────────────┐      multipart/form-data       ┌──────────────┐      feature vector      ┌──────────────────┐
-│  Frontend   │ ─────────────────────────────▶ │  FastAPI      │ ────────────────────────▶│  ML pipeline       │
-│ (React +    │ ◀───────────────────────────── │  backend      │ ◀────────────────────────│  (OpenCV features  │
-│  Vite)      │      JSON quality report        │  + SQLite     │   per-issue predictions   │  + RandomForests)  │
-└────────────┘                                 └──────────────┘                           └──────────────────┘
-```
+flowchart LR
+    A["🎨 Frontend<br/><b>React + Vite</b><br/>Image Upload & Results"]
+
+    B["⚡ FastAPI Backend<br/><b>REST API + SQLite</b><br/>Request Processing"]
+
+    C["🤖 ML Pipeline<br/><b>OpenCV + Random Forest</b><br/>Feature Extraction & Detection"]
+
+    D["📊 Quality Report<br/><b>JSON Response</b><br/>Score, Issues & Recommendations"]
+
+    A -->|"📦 multipart/form-data"| B
+    B -->|"🔢 Feature Vector"| C
+    C -->|"🔍 Predictions"| B
+    B -->|"📄 JSON Quality Report"| D
+    D -->|"📊 Display Results"| A
 
 ## 1. Project layout
 
