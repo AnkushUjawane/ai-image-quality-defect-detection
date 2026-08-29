@@ -1,0 +1,37 @@
+services:
+  backend:
+    build: ./backend
+    container_name: iq-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATA_DIR=/app/data
+      - DATABASE_URL=sqlite:////app/data/analyses.db
+      - CORS_ORIGINS=*
+    volumes:
+      - backend_data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Base URL the BROWSER uses to reach the backend (not container-to-container).
+        # Baked into the React bundle at build time — rebuild the image if this changes.
+        VITE_API_BASE_URL: http://localhost:8000
+    container_name: iq-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  backend_data:
